@@ -1,0 +1,30 @@
+﻿ID;Personaje;Ingame Name;Voice;tspeed;Txt Color;Pitch;Accel?;Box Color;Name Color;Line Color;CanNext Color
+0;Voz interior;NONAME;watcher;32;white;100;true;black;white;white;white
+1;Angel;Arcangel Gabriel;hensu;20;blue;110;true;white;black;black;white
+2;Satan;Satan;narrator;10;white;80;true;red;white;white;white
+3;Sans;Sans;sans;20;white;100;true;black;white;white;white
+4;Debugging;El Tremendo Nombre conchetumare 2.0;sans;32;lightblue;50;true;black;lightblue;lightblue;lightblue
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
+;;;;;;;;;;;
