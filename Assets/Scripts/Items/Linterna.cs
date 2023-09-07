@@ -14,26 +14,36 @@ public class Linterna : MonoBehaviour
     GameObject LightSourceGO;
     Light LightSourceLight;
 
-    public bool isLightOn = false;
+    GameObject UVSourceGO;
+    Light UVSourceLight;
 
-    GameObject PlayerCamGO;
+    public bool isLightOn = false;
+    public bool isUVOn = false;
+
+    GameObject PlayerGO;
     public PlayerState PlayerStateScript;
 
     GameObject WeaponSoundGO;
     AudioSource WeaponSoundSource;
+
+    AudioSource UVSoundSource;
+
+    public float UVLevel = 0;
 
     public float LinternaBattery = 100;
     public float LinternaBatteryDrainMultiplier = 1;
     public bool LinternaBatteryDead = false;
 
     GameObject LinternaContainerGO;
+    CanvasGroup LinternaContainerCanvasGroup;
+
     GameObject LinternaBarGO;
     
     Animator thisAnimator;
 
-    GameObject FPFXGO;
-    Image FPFXImage;
-    Animator FPFXAnimator;
+    private FirstPersonMovement controller;
+
+    bool changedSpeed = false;
 
     void Awake()
     {
@@ -43,22 +53,30 @@ public class Linterna : MonoBehaviour
         LightSourceGO = LinternaStatesGO.transform.GetChild(0).gameObject;
         LightSourceLight = LightSourceGO.GetComponent<Light>();
 
-        PlayerCamGO = this.gameObject.transform.parent.gameObject;
-        PlayerStateScript = PlayerCamGO.GetComponent<PlayerState>();
+        UVSourceGO = LinternaStatesGO.transform.GetChild(1).gameObject;
+        UVSourceLight = UVSourceGO.GetComponent<Light>();
+        UVSoundSource = UVSourceGO.GetComponent<AudioSource>();
 
-        WeaponSoundGO = PlayerCamGO.transform.Find("WeaponSoundSource").gameObject;
+        PlayerGO = this.gameObject.transform.parent.parent.gameObject;
+        PlayerStateScript = PlayerGO.GetComponent<PlayerState>();
+
+        WeaponSoundGO = PlayerGO.transform.Find("Weapons").Find("WeaponSoundSource").gameObject;
         WeaponSoundSource = WeaponSoundGO.GetComponent<AudioSource>();
 
-        //DEBUGGGGGGGGGGGGGGGGGGGGGG BARRA DE ENERGIA LINTERNA
         LinternaContainerGO = GameObject.FindObjectOfType<Canvas>().gameObject.transform.Find("LinternaEnergyContainer").gameObject;
+        LinternaContainerCanvasGroup = LinternaContainerGO.GetComponent<CanvasGroup>();
+
         LinternaBarGO = LinternaContainerGO.transform.GetChild(0).gameObject;
 
         thisAnimator = this.gameObject.GetComponent<Animator>();
+
+        controller = GameObject.FindWithTag("Player").gameObject.GetComponent<FirstPersonMovement>();
     }
 
     void Start(){
         LinternaStatesSR.sprite = LinternaStatesImages[0];
         LightSourceLight.enabled = false;
+        UVSourceLight.enabled = false;
     }
 
     void Update()
@@ -73,14 +91,15 @@ public class Linterna : MonoBehaviour
                 }
             }
 
-            if(PlayerStateScript.PlayerStatus[0] && UnityEngine.Input.GetMouseButtonDown(1) && isLightOn){
-                if(LinternaBattery>=50 && !thisAnimator.GetCurrentAnimatorStateInfo(0).IsName("LinternaNormalFlash")){
-                    thisAnimator.SetTrigger("gotFlash");
-                    FPFXAnimator.SetTrigger("LinternaNormalFlash");
-                    WeaponSoundSource.PlayOneShot(FlashlightSounds[3]);
-                    LinternaBattery-=50;
-                }else{
-                    Debug.Log("No tienes suficiente batería");
+            if(PlayerStateScript.PlayerStatus[0]){
+                if(UnityEngine.Input.GetMouseButtonDown(1)){
+                    if(LinternaBattery>0 && !isUVOn){
+                        TurnOnUVLight();
+                    }
+                }
+
+                if(UnityEngine.Input.GetMouseButtonUp(1)){
+                    TurnOffUVLight(true);
                 }
             }
 
@@ -88,12 +107,35 @@ public class Linterna : MonoBehaviour
                 LinternaBattery-=Time.deltaTime * LinternaBatteryDrainMultiplier;
             }
 
+            if(isUVOn){
+                LinternaBattery-=Time.deltaTime * LinternaBatteryDrainMultiplier;
+            }
+
             if(LinternaBattery<=0 && !LinternaBatteryDead){
                 TurnOffLight(false);
+                TurnOffUVLight(false);
             }
 
             if(LinternaBattery>0){
                 LinternaBatteryDead=false;
+            }
+        }
+    }
+
+    void FixedUpdate(){
+        if(isUVOn){
+            if(!changedSpeed){
+                controller.canRun=false;
+                controller.speed=3;
+                Debug.Log("Lentito");
+                changedSpeed = true;
+            }
+        }else{
+            if(changedSpeed){
+                controller.canRun=true;
+                controller.speed=5;
+                Debug.Log("Rápido de nuevo");
+                changedSpeed=false;
             }
         }
     }
@@ -104,6 +146,26 @@ public class Linterna : MonoBehaviour
         LightSourceLight.enabled = true;
         LinternaBatteryDead=false;
         isLightOn=true;
+    }
+
+    public void TurnOnUVLight(){
+        UVSourceLight.enabled = true;
+        UVSoundSource.Play();
+        UVSoundSource.volume = 0.25f;
+        LinternaBatteryDead=false;
+        isUVOn=true;
+    }
+
+    public void TurnOffUVLight(bool wasManual){
+        if(!wasManual){
+            WeaponSoundSource.PlayOneShot(FlashlightSounds[2]);
+            LinternaBattery=0;
+            LinternaBatteryDead=true;
+        }
+        UVSourceLight.enabled = false;
+        UVSoundSource.Stop();
+        UVSoundSource.volume = 0f;
+        isUVOn=false;
     }
 
     public void TurnOffLight(bool wasManual){

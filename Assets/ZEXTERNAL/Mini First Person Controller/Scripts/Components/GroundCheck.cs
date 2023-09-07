@@ -17,11 +17,17 @@ public class GroundCheck : MonoBehaviour
     Vector3 RaycastOrigin => transform.position + Vector3.up * OriginOffset;
     float RaycastDistance => distanceThreshold + OriginOffset;
 
+    public string currentFloor = "";
 
     void LateUpdate()
     {
-        // Check if we are grounded now.
-        bool isGroundedNow = Physics.Raycast(RaycastOrigin, Vector3.down, distanceThreshold * 2);
+        RaycastHit hit;
+        
+        bool isGroundedNow = Physics.Raycast(RaycastOrigin, Vector3.down, out hit, distanceThreshold * 2);
+
+        if(isGroundedNow){
+            currentFloor = hit.collider.gameObject.name;
+        }
 
         // Call event if we were in the air and we are now touching the ground.
         if (isGroundedNow && !isGrounded)

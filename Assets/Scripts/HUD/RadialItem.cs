@@ -14,7 +14,7 @@ public class RadialItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public bool isMouseOver = false;
     public bool isRayOver = false;
     
-    GameObject PlayerCam;
+    GameObject PlayerGO;
     PlayerState PlayerStateScript; //para ver si el jugador tiene el arma en cuestion y renderizar su icono en el menu radial
 
     GameObject RadialMenuGO;
@@ -33,8 +33,8 @@ public class RadialItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         RadialIconGO = this.transform.GetChild(0).gameObject;
         RadialIconImage = RadialIconGO.GetComponent<Image>();
 
-        PlayerCam = GameObject.FindObjectOfType<Camera>().gameObject;
-        PlayerStateScript = PlayerCam.GetComponent<PlayerState>();
+        PlayerGO = GameObject.FindObjectOfType<PlayerState>().gameObject;
+        PlayerStateScript = PlayerGO.GetComponent<PlayerState>();
     }
 
     // Update is called once per frame

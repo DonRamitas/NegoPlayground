@@ -12,12 +12,12 @@ public class RadialMenu : MonoBehaviour
 
     bool isOpen = false;
 
-    GameObject PlayerCam;
+    GameObject PlayerGO;
     PlayerState PlayerStateScript; //para ver si al cambiar el jugador tiene el arma en cuestion
 
     public bool haveClicken = false; //si se clickeo un key item del menu radial
 
-    Camera PlayerCamCam;
+    Camera PlayerCam;
 
     GameObject CrosshairGO;
     Animator CrosshairAnimator;
@@ -31,9 +31,9 @@ public class RadialMenu : MonoBehaviour
             RadialOptionScripts[i] = RadialOption[i].GetComponent<RadialItem>();
         }
 
-        PlayerCam = GameObject.FindObjectOfType<Camera>().gameObject;
-        PlayerStateScript = PlayerCam.GetComponent<PlayerState>();
-        PlayerCamCam = PlayerCam.GetComponent<Camera>();
+        PlayerGO = GameObject.FindObjectOfType<PlayerState>().gameObject;
+        PlayerStateScript = PlayerGO.GetComponent<PlayerState>();
+        PlayerCam = GameObject.FindObjectOfType<Camera>().gameObject.GetComponent<Camera>();
 
         CrosshairGO = this.transform.parent.Find("Crosshair").GetChild(0).GetChild(0).gameObject;
         CrosshairAnimator = CrosshairGO.GetComponent<Animator>();
@@ -66,7 +66,7 @@ public class RadialMenu : MonoBehaviour
     }
 
     void RayoDesdeCentroRadial(){
-        Vector2 ScreenCenter = new Vector2((PlayerCamCam.pixelWidth-1)/2,(PlayerCamCam.pixelHeight-1)/2); //recibe constantemente el centro de la pantalla
+        Vector2 ScreenCenter = new Vector2((PlayerCam.pixelWidth-1)/2,(PlayerCam.pixelHeight-1)/2); //recibe constantemente el centro de la pantalla
         Vector2 MouseDirection = (ScreenCenter-(Vector2)Input.mousePosition).normalized*-Vector2.one; //el vector, desde el centro, hacia el mouse
         float DistanciaCentroMouse = Vector2.Distance(ScreenCenter,Input.mousePosition);
         if(DistanciaCentroMouse>6){

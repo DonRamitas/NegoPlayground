@@ -59,7 +59,7 @@ public class DialogManager : MonoBehaviour
         GameObject SelectArrowContainerGO;
         RectTransform SelectArrowContainerRect;
 
-        GameObject PlayerCamGO;
+        GameObject PlayerGO;
         PlayerState PlayerStateScript;
 
         GameObject CanvasGO;
@@ -68,6 +68,9 @@ public class DialogManager : MonoBehaviour
         GameObject SeparationLineGO;
         RectTransform SeparationLineRectTransform;
         Image SeparationLineImage;
+
+        GameObject HudGO;
+        CanvasGroup HudCanvasGroup;
     
     public void Awake(){
         InicioComponentes();
@@ -88,8 +91,8 @@ public class DialogManager : MonoBehaviour
         BoxRectTransform = BoxGO.GetComponent<RectTransform>();
         BoxAnimator = BoxGO.GetComponent<Animator>();
 
-        PlayerCamGO = GameObject.FindObjectOfType<PlayerState>().gameObject;
-        PlayerStateScript = PlayerCamGO.GetComponent<PlayerState>();
+        PlayerGO = GameObject.FindObjectOfType<PlayerState>().gameObject;
+        PlayerStateScript = PlayerGO.GetComponent<PlayerState>();
 
         NameGO = BoxGO.transform.Find("Name").gameObject;
         NameText = NameGO.GetComponent<TMP_Text>();
@@ -100,6 +103,9 @@ public class DialogManager : MonoBehaviour
         SeparationLineGO = this.transform.GetChild(0).Find("SeparationLine").gameObject;
         SeparationLineRectTransform = SeparationLineGO.GetComponent<RectTransform>();
         SeparationLineImage = SeparationLineGO.GetComponent<Image>();
+
+        HudGO = this.transform.parent.Find("InvHUD").gameObject;
+        HudCanvasGroup = HudGO.GetComponent<CanvasGroup>();
     }
 
     //verifica si hay un dialogo activo antes de iniciar otro
@@ -157,6 +163,7 @@ public class DialogManager : MonoBehaviour
     void PrepareDialog(){
         WipeDialog(); //resetea el dialogo
         BoxGO.SetActive(true);
+        HudCanvasGroup.alpha = 0;
         DialogActive = true; //indica que hay un dialogo activo
         SetDialogSizePosition(0);
         BoxAnimator.Play("PopOut");
@@ -431,23 +438,7 @@ public class DialogManager : MonoBehaviour
                     TextHolderText.text += FullDialog[i][j];
                     if(CurrentColorOverride != 'n'){
 
-                        TMP_TextInfo textInfo = TextHolderText.textInfo;
-
-                        CanvasRenderer uiRenderer = TextHolderText.canvasRenderer;
-
-                        Mesh newMesh = TextHolderText.mesh;
-
-                        int vertexIndex = textInfo.characterInfo[textInfo.characterCount-1].vertexIndex;
-                        Debug.Log(vertexIndex);
-                        uiVertices[] newVertexColors = newMesh.vertices;
-                        Color32 myColor = Color.red;
-
-                        newVertexColors[vertexIndex + 0] = myColor;
-                        newVertexColors[vertexIndex + 1] = myColor;
-                        newVertexColors[vertexIndex + 2] = myColor;
-                        newVertexColors[vertexIndex + 3] = myColor;
-
-                        uiRenderer.SetMesh(newMesh);
+                        
                     }
                     //si la letra no es un espacio
                     if (FullDialog[i][j] != ' ')
@@ -520,10 +511,13 @@ public class DialogManager : MonoBehaviour
             }
         }
 
-        if (!DialogActive && BoxGO.activeSelf)
+        if (!DialogActive)
         {
-            BoxGO.SetActive(false);
+            HudCanvasGroup.alpha = 1;
+            if(BoxGO.activeSelf){
+                BoxGO.SetActive(false);
+            }
         }
-
+        
     }
 }

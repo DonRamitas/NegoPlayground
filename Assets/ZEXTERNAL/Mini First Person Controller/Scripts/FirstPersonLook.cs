@@ -8,8 +8,8 @@ public class FirstPersonLook : MonoBehaviour
     float MainSensitivity;
     public float smoothing = 1.5f;
 
-    Vector2 velocity;
-    Vector2 frameVelocity;
+    public Vector2 velocity;
+    public Vector2 frameVelocity;
 
     GameObject PlayerCamGO;
     PlayerState PlayerStateScript;

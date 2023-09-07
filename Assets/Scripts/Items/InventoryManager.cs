@@ -25,11 +25,13 @@ public class InventoryManager : MonoBehaviour
     GameObject InventoryPanelGO;
     bool isInventoryOpen = false;
     
-    GameObject PlayerCamGO;
+    GameObject PlayerGO;
     PlayerState PlayerStateScript;
 
     GameObject LinternaGO;
     Linterna LinternaScript;
+
+    NotificationManager NotiScript;
 
     void Awake(){
         InventoryPanelGO = this.transform.GetChild(0).gameObject;
@@ -44,11 +46,13 @@ public class InventoryManager : MonoBehaviour
             UseItemScripts[i] = UseItems[i].GetComponent<UseItem>();
             HUDUseItemScripts[i] = HUDUseItemsGO[i].GetComponent<UseItem>();
         }
-        PlayerCamGO = GameObject.FindObjectOfType<Camera>().gameObject;
-        PlayerStateScript = PlayerCamGO.GetComponent<PlayerState>();
+        PlayerGO = GameObject.FindObjectOfType<PlayerState>().gameObject;
+        PlayerStateScript = PlayerGO.GetComponent<PlayerState>();
 
-        LinternaGO = PlayerCamGO.transform.Find("HandWithLinterna").gameObject;
+        LinternaGO = PlayerGO.transform.Find("Weapons").Find("HandWithLinterna").gameObject;
         LinternaScript = LinternaGO.GetComponent<Linterna>();
+
+        NotiScript = this.transform.parent.Find("Notification Container").gameObject.GetComponent<NotificationManager>();
     }
 
     void Start(){
@@ -104,7 +108,7 @@ public class InventoryManager : MonoBehaviour
                 return;
             }
         }
-        Debug.Log("No queda espacio en el inventario");
+        NotiScript.ShowNotification("No te queda espacio en el inventario","black","bad");
     }
 
     public bool CheckItemAvailability(int ItemID){
@@ -126,26 +130,27 @@ public class InventoryManager : MonoBehaviour
         switch(ItemID){
             case 1: //batería de linterna
                 if(PlayerStateScript.CurrentWeapon!=1){
-                    Debug.Log("Debes tener la linterna en la mano");
+                    NotiScript.ShowNotification("Debes usar este objeto con la linterna en la mano","black","bad");
                     break;
                 }
                 if(PlayerStateScript.isObtained[1]){
                     if(LinternaScript.LinternaBattery<100){
                         LinternaScript.LinternaBattery = 100;
+                        NotiScript.ShowNotification("Linterna cargada","black","heal");
                         wasConsumed=true;
                     }else{
-                        Debug.Log("La bateria de tu linterna esta al maximo");
+                        NotiScript.ShowNotification("Tu linterna esta cargada completamente","black","bad");
                     }
                 }else{
-                    Debug.Log("No tienes linterna");
+                    NotiScript.ShowNotification("Necesitas una linterna para usar las baterias","black","bad");
                 }
                 break;
             case 2: //medkit
-                Debug.Log("Te has curado (debug)");
+                NotiScript.ShowNotification("Te has curado (DEBUG)","black","heal");
                 wasConsumed=true;
                 break;
             default:
-                Debug.Log("El ID de este consumible no es valido");
+                NotiScript.ShowNotification("ERROR: El ID de este consumible no es valido","red","bad");
                 break;
         }
         if(wasConsumed){

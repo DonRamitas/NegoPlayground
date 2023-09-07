@@ -21,6 +21,7 @@ public class CrosshairInteractions : MonoBehaviour
 
     int NPCLayer, KeyItemLayer, UseItemLayer;
 
+    public GameObject PlayerGO;
     public PlayerState PlayerStateScript; //para que al recoger un arma se deje constancia en el script PlayerState que se obtuvo
 
     void Awake()
@@ -39,6 +40,9 @@ public class CrosshairInteractions : MonoBehaviour
         NPCLayer = LayerMask.NameToLayer("NPC");
         KeyItemLayer = LayerMask.NameToLayer("KeyItem");
         UseItemLayer = LayerMask.NameToLayer("UseItem");
+
+        PlayerGO = GameObject.FindObjectOfType<PlayerState>().gameObject;
+        PlayerStateScript = PlayerGO.GetComponent<PlayerState>();
     }
 
     void Update()
@@ -55,7 +59,8 @@ public class CrosshairInteractions : MonoBehaviour
         if(PlayerStateScript!=null){
             if(PlayerStateScript.PlayerStatus[0]){
                 RaycastHit hit;
-                if (Physics.Raycast(transform.position,transform.TransformDirection(Vector3.forward), out hit, 4) && isTargetInteractable){ //si el raycast choca con algo
+                Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 2, Color.red);
+                if (Physics.Raycast(transform.position,transform.TransformDirection(Vector3.forward), out hit, 2) && isTargetInteractable){ //si el raycast choca con algo
                     if(hit.transform.gameObject.layer == NPCLayer){ //si choca con NPC
                         CrosshairTextGO.SetActive(true);
                         CrosshairTextMesh.text = "Hablar";
